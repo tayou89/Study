@@ -67,7 +67,7 @@ void	DFSPrintGraphVertex(Graph *graph, int startVertex)
 
 	StackInit(&stack);
 	VisitVertex(graph, visitVertex);
-	StackPush(&stack, visitVertex);
+//	StackPush(&stack, visitVertex);
 	while (ListFirst(&(graph->listArray[visitVertex]), &nextVertex) == TRUE)
 	{
 		visitFlag = FALSE;
