@@ -24,9 +24,10 @@ print('''
 			{listStr}
 		</ol>
 		<a href="create.py">create</a>
-		<form action="process_create.py" method="POST">
-			<p><input type="text" name="title" placeholder="title"></p>
-			<p><textarea rows="4" name="description" placeholder="description"></textarea></p>
+		<form action="process_update.py" method="POST">
+			<input type="hidden" name="pageId" value="{form_default_title}">
+			<p><input type="text" name="title" placeholder="title" value="{form_default_title}"></p>
+			<p><textarea rows="4" name="description" placeholder="description">{form_default_description}</textarea></p>
 			<p><input type="submit"></p>
 		</form>
 		<h2>{title}</h2>
@@ -35,4 +36,4 @@ print('''
 		</p>
 	</body>
 </html>
-'''.format(title=pageId, desc = description, listStr=view.getList()))
+'''.format(title=pageId, desc = description, listStr=view.getList(), form_default_title=pageId, form_default_description=description))

@@ -18,3 +18,6 @@ l
 l
 o
 ''')
+
+import sys
+print(sys.path)
