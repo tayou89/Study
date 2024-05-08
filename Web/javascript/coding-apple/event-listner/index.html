@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<div class="alert-box" id="alert">
+		<p id="title">아이디를 입력하세요</p>
+		<button id="close">닫기</button>
+	</div>
+	<button onclick="showCommand(1)">버튼1</button>
+	<button onclick="showCommand(2)">버튼2</button>
+	<script>
+		document.getElementById('close').addEventListener('mouseover', function()
+		{
+			changeDisplay('none');	
+		});
+
+		function changeDisplay(type)
+		{
+			document.getElementById('alert').style.display = type;
+		}
+		function showCommand(buttonNumber)
+		{
+			document.getElementById('alert').style.display = 'block';
+			if (buttonNumber == 1)
+				document.getElementById('title').innerHTML = '아이디를 입력하세요';
+			else
+				document.getElementById('title').innerHTML = '비밀번호를 입력하세요';
+		}
+	</script>
+</body>
+</html>
