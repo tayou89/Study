@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<ul>
+		<li class="apple">Apple</li>
+		<li class="banana">Banana</li>
+		<li class="orange">Orange</li>
+	</ul>
+	<script>
+		const $banana = document.querySelector('.banana');
+		const $apple = document.querySelector('.apple');
+		const $allLines = document.querySelectorAll('ul > li');
+
+		$banana.style.color = 'red';
+		$apple.style.color = 'red';
+		$allLines.forEach(element => { element.style.color = 'red';});
+
+		console.log($apple.matches('ul > li.banana'));
+		console.log($apple.matches('ul > li.apple'));
+	</script>
+</body>
+</html>

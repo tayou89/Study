@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<div id="foo">Hello <span>world!</span></div>
+</body>
+<script>
+	const element = document.getElementById('foo');
+
+	console.log(element.innerHTML);
+	element.innerHTML = 'Hi <span>there</span>';
+</script>
+</html>

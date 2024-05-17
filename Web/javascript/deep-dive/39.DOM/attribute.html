@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<input id="user" type="text" value="tayou">
+	<script>
+		const { attributes } = document.getElementById('user');
+		const $input = document.getElementById('user');
+		console.log(attributes);
+
+		const inputValue = $input.getAttribute('value');
+		console.log(inputValue);
+
+		$input.setAttribute('value', 'foo');
+		console.log($input.getAttribute('value'));
+
+		$input.oninput = () =>
+		{
+			console.log('DOM Property Value: ', $input.value);
+		};
+
+		console.log('Attribute Value: ', $input.getAttribute('value'));
+	</script>
+</body>
+</script>
+</html>

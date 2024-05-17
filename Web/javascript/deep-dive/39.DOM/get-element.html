@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<ul>
+		<li id="apple">Apple</li>
+		<li id="banana">Banana</li>
+		<li id="orange">Orange</li>
+	</ul>
+	<script>
+		const $elementById = document.getElementById('banana');
+		const $elementByTag = document.getElementsByTagName('li');
+
+		$elementById.style.color = 'red';
+		[...$elementByTag].forEach(element => {element.style.color = 'red';});
+	</script>
+</body>
+</html>
