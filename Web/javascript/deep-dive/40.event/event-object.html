@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<p>Click! It will show coordinate!</p>
+	<em class="message"></em>
+	<script>
+		const $message = document.querySelector('.message');
+
+		function showCoordinate(e)
+		{
+			$message.textContent = `clientX: ${e.clientX}, clientY: ${e.clientY}`;
+		}
+
+		document.onclick = showCoordinate;
+	</script>
+</body>
+</html>

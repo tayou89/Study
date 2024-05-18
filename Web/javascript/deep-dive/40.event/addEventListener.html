@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<button>Click me!</button>
+	<script>
+		const $button = document.querySelector('button');
+
+		$button.onclick = function ()
+		{
+			console.log('This is property click handler');
+		};
+		$button.addEventListener('click', function() 
+		{
+			console.log('This is addEvenetListener handler');
+		});
+		$button.addEventListener('click', function() 
+		{
+			console.log('This is another addEvenetListener handler');
+		});
+	</script>
+</body>
+</html>

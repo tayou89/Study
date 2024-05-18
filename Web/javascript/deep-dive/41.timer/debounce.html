@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<button>Click me!</button>
+	<pre>Normal click event counter <span class="normal-message">0</span></pre>
+	<pre>Debounce click event counter <span class="debounce-message">0</span></pre>
+	<pre>Throttle click event counter <span class="throttle-message">0</span></pre>
+	<script>
+		const $button = document.querySelector('button');
+		const $normalMessage = document.querySelector('.normal-message');
+		const $debounceMessage = document.querySelector('.debounce-message');
+		const $throttleMessage = document.querySelector('.throttle-message');
+
+		const debounce = (callback, delay) =>
+		{
+			let timerId;
+			return ((...args) =>
+			{
+				if (timerId) 
+					clearTimeout(timerId);
+				timerId = setTimeout(callback, delay, ...args);
+			});
+		};
+
+		const throttle = (callback, delay) =>
+		{
+			let timerId;
+
+			return ((...args) =>
+			{
+				if (timerId) 
+					return ;
+				timerId = setTimeout(() => 
+				{
+					callback(...args);
+					timerId = null;
+				}, delay);
+			});
+		};
+
+		$button.addEventListener('click', () =>
+		{
+			$normalMessage.textContent = +$normalMessage.textContent + 1;
+		});
+
+		$button.addEventListener('click', debounce(() => 
+		{
+			$debounceMessage.textContent = +$debounceMessage.textContent + 1;
+		}, 500));
+
+		$button.addEventListener('click', throttle(() =>
+		{
+			$throttleMessage.textContent = +$throttleMessage.textContent + 1;
+		}, 500));
+	</script>
+</body>
+</html>

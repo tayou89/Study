@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<input type="checkbox">
+	<em class="message">off</em>
+	<script>
+		const $checkbox = document.querySelector('input[type=checkbox]');
+		const $message = document.querySelector('.message');
+
+		$checkbox.onchange = e =>
+		{
+			console.log(Object.getPrototypeOf(e) === Event.prototype);
+			$message.textContent = e.target.checked ? 'on' : 'off';
+		};
+	</script>
+</body>
+</html>

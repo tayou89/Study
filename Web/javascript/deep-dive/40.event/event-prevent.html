@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Document</title>
+</head>
+<body>
+	<a href="https://gooStudy/Web/javascript/deep-dive/40.event/event-propagation-order copy.htmlgle.com">go</a>
+	<input type="checkbox">
+	<script>
+		document.querySelector('a').onclick = e =>
+		{
+			e.preventDefault();
+		};
+
+		document.querySelector('input[type=checkbox]').onclick = e =>
+		{
+			e.preventDefault();
+		};
+	</script>
+</body>
+</html>
