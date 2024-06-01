@@ -1,0 +1,23 @@
+services:
+    react:
+        build:
+            context: ./react
+            dockerfile: Dockerfile
+        image: react
+        pull_policy: never
+        container_name: react
+        tty: true
+        ports:
+            - "3000:3000"
+            - "2000:22"
+        volumes:
+            - react:/home/tayou/react-app
+        restart: on-failure
+
+volumes:
+    react:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ${REACT_VOLUME_PATH}
