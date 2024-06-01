@@ -5,12 +5,24 @@ import {useState} from 'react';
 function Nav(props)
 {
 	const list = [];
-	for (let i = 0; i < props.topics.length; i++) {
+	for (let i = 0; i < props.topics.length; i++) 
+	{
 		let t = props.topics[i];
-		list.push(<li key={t.id}><a id={t.id} href={'/read/' + t.id} onClick={event => {
-			event.preventDefault();
-			props.onChangeMode(Number(event.target.id));
-		}}>{t.title}</a></li>);
+		list.push
+		(
+			<li key={t.id}>
+				<a id={t.id} href={'/read/' + t.id} onClick=
+				{
+					(event) => 
+					{
+						event.preventDefault();
+						props.onChangeMode(Number(event.target.id));
+					}
+				}>
+					{t.title}
+				</a>
+			</li>
+		);
 	}
 	return (
 		<nav>
@@ -125,13 +137,40 @@ function App() {
 			}
 		}
 		content = <Article title={title} body={body}></Article>
-		contextControl = <li><a href={"/update/" + id} onClick=
-		{(event) =>
-			{
-				event.preventDefault();
-				setMode('UPDATE');
-			}
-		}>Update</a></li>
+		contextControl = 
+		<>
+			<li>
+				<a href={"/update/" + id} onClick= 
+					{(event) =>
+						{
+							event.preventDefault();
+							setMode('UPDATE');
+						}
+					}
+				>
+					Update
+				</a>
+			</li>
+			<li>
+				<input type="button" value="Delete" onClick=
+					{
+						() => 
+						{
+							const newTopics = [];
+							for (let i = 0; i < topics.length; i++)
+							{
+								if (topics[i].id !== id)
+								{
+									newTopics.push(topics[i]);
+								}
+							}
+							setTopics(newTopics);
+							setMode('WELCOME');
+						}
+					}
+				/>
+			</li>
+		</>
 	}
 	else if (mode === 'CREATE')
 	{
@@ -163,7 +202,19 @@ function App() {
 		{
 			(title, body) =>
 			{
-				
+				console.log(title, body);	
+				const newTopics = [...topics];
+				const updateTopic = {id:id, title:title, body:body};
+				for (let i = 0; i < newTopics.length; i++)
+				{
+					if (newTopics[i].id === id)
+					{
+						newTopics[i] = updateTopic;
+						break ;
+					}
+				}
+				setTopics(newTopics);
+				setMode('READ');
 			}
 		}></Update>
 	}
