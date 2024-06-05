@@ -1,0 +1,22 @@
+services:
+    node:
+        build:
+            context: ./node
+            dockerfile: Dockerfile
+        image: node
+        pull_policy: never
+        container_name: node
+        tty: true
+        ports:
+             - "5173:5173"
+        volumes:
+             - node:/home/node/nomad-coder/css-layout-masterclass
+        restart: on-failure
+
+volumes:
+    node:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ${NODE_VOLUME_PATH}
