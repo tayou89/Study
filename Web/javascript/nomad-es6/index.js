@@ -1,13 +1,4 @@
-const wrapper = document.querySelector(".wrapper");
+const promise = new Promise(resolve => resolve(1));
 
-const addWelcome = () => 
-{
-	const div = `
-		<div class="hello">
-			<h1 class="title">Hello</h1>
-		</div>
-	`;
-	wrapper.innerHTML = div;
-};
-
-setTimeout(addWelcome, 2000);
+console.log(promise);
+promise.then(console.log);
