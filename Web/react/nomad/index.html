@@ -9,14 +9,10 @@
 	<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 	<script type="text/babel">
 		const root = document.getElementById("root");
-		function Button({text, fontSize}){
+		function Button({text, fontSize, onClick}){
 			console.log(text, "is rendering...");
 			return (
-				<button
-					style={{
-						fontSize: fontSize,
-					}}
-				>
+				<button style={{ fontSize: fontSize,}} onClick={onClick}>
 					{text}
 				</button>
 			);
@@ -27,14 +23,16 @@
 			fontSize: PropTypes.number,
 		};
 		const App = () => {
-			const [value, setValue] = React.useState("Save Changes");
+			const [value, setValue] = React.useState(false);
 			const changeValue = () => {
-				setValue(current => "Changed value");
+                console.log(value);
+				setValue(current => !current);
 			};
+            console.log(value);
 			return (
 				<div>
-					<MemoButton text={value} fontSize="abc"/>
-					<MemoButton text="Oops" />
+					<Button text="Click me" onClick={changeValue} fontSize="12"/>
+					{ value ? <Button text="Oops" /> : null }
 				</div>
 			);
 		};
