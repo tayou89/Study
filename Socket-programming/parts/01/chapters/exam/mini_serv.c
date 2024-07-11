@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <sys/select.h>
+#include <stdio.h>
 
 #define BUFFER_SIZE	1024
 #define CLIENTS_MAX  1024
@@ -25,17 +26,19 @@ typedef struct s_server {
 }   t_server;
 
 void    			checkArgumentCount(int count);
-void				initializeServer(t_server *server, int port);
-int					kgetServerSocket(void);
+void				setServer(t_server *server, int port);
+int					getServerSocket(void);
 fd_set				getServerFdSet(int socket);
 struct sockaddr_in	getServerAddress(int port);
 void    			makeServerSocketListen(int socket, struct sockaddr_in address);
 void    			makeChattingLoop(t_server *server);
+void    			response(t_server *server, fd_set readSet);
 void    			acceptClient(t_server *server);
 void				receiveRequestMessage(t_server *server);
 void				removeClient(int clientSocket, t_server *server);
-int					getSocketMax(int prevMax, fd_set fdSet);
+int					getNewSocketMax(int prevMax, fd_set fdSet);
 void				getRequestMessage(char *prevMessage, t_server *server);
+char				*ft_strjoin(char *string1, char *string2);
 void				sendClientMessage(t_server *server);
 void				sendMessage(char *message, int ignoreFd, t_server server); 
 void				handleError(char *message, t_server *server);
@@ -104,13 +107,13 @@ void    makeServerSocketListen(int socket, struct sockaddr_in address) {
 
 void    makeChattingLoop(t_server *server) {
     int		fdCount = 0;
-	fd_set	readSet = server->fdSet;
+	fd_set	readSet;
 
     while (1) {
-        fdCount = select(server->fdMax, &readSet, 0, 0, 0);
+		readSet = server->fdSet;
+        fdCount = select(server->fdMax + 1, &readSet, 0, 0, 0);
         if (fdCount)
             response(server, readSet);
-		readSet = server->fdSet;
     }
 } 
 
@@ -140,8 +143,9 @@ void    acceptClient(t_server *server) {
     if (clientSocket > server->fdMax)
         server->fdMax = clientSocket;
 	server->clientIds[clientSocket] = server->lastClientId + 1;
-	server->lastClientId = server->clientIds;
+	server->lastClientId = server->clientIds[clientSocket];
 	sprintf(buffer, "server: client %d just arrived\n", server->clientIds[clientSocket]);
+	printf("%s", buffer);
 	sendMessage(buffer, clientSocket, *server);
 }
 
@@ -168,7 +172,7 @@ void	removeClient(int clientSocket, t_server *server) {
 	sendMessage(buffer, clientSocket, *server);
 }
 
-int	getSocketMax(int prevMax, fd_set fdSet) {
+int	getNewSocketMax(int prevMax, fd_set fdSet) {
 	int		max = 0;
 	int		i;
 
@@ -233,6 +237,7 @@ void	sendClientMessage(t_server *server) {
 		if (!buffer) 
 			handleError("Fatal error", server);
 		sprintf(buffer, "client %d: %s", server->request.id, server->request.message);
+		printf("%s", buffer);
 		sendMessage(buffer, server->request.socket, *server);
 		free(buffer);
 		buffer = NULL;
@@ -261,7 +266,8 @@ void    handleError(char *message, t_server *server) {
 	if (server && server->request.message) 
 		freeRequestMessage(server);
     write(STDERR_FILENO, message, strlen(message));
-    write(STDERR_FILENO, '\n', 1);
+    write(STDERR_FILENO, "\n", 1);
+	close(server->socket);
     exit(1);
 }
 

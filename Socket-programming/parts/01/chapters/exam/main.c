@@ -1,15 +1,14 @@
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 
 int	main(void) {
-	char	string[10];
-	char	*example1 = "abcdefghijk";
-	// char	*example2 = "ggggg";
+	char	buffer[100];
+	char	*string1 = NULL;
+	char	*string2 = "abcd";
 
-	strcpy(string, example1);
-	string[sizeof(string) - 1] = '\0';
-	printf("string: %s\n", string);
-	// strcat(string, example2);
-	// printf("string: %s\n", string);
+	bzero(buffer, sizeof(buffer));
+	strcpy(buffer, string1);
+	strcat(buffer, string2);
+	printf("buffer: %s\n", buffer);
 	return (0);
 }
