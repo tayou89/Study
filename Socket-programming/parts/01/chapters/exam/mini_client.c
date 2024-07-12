@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE	10
 
 void	checkArgumentCount(int count);
 void	handleError(char *errorMessage);
@@ -59,7 +59,7 @@ int	main(int argc, char *argv[]) {
 			// 	readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
 			// 	buffer[readSize] = '\0';
 			// }
-			printf("buffer: %s\n", buffer);
+			printf("buffer: %s", buffer);
 			send(clientSocket, buffer, strlen(buffer), 0);
 			// free(input);
 			// input = NULL;
