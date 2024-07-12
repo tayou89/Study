@@ -153,6 +153,7 @@ void	receiveRequestMessage(t_server *server) {
 	char	buffer[BUFFER_SIZE];
 	int		readSize;
 
+	printf("receiveRequestMessage() called");
 	readSize = recv(server->request.socket, buffer, BUFFER_SIZE - 1, 0);
 	buffer[readSize] = '\0';
 	if (readSize == 0) 
@@ -169,6 +170,7 @@ void	removeClient(int clientSocket, t_server *server) {
 	if (clientSocket == server->fdMax)
 		server->fdMax = getNewSocketMax(clientSocket, server->fdSet);
 	sprintf(buffer, "server: client %d just left\n", server->clientIds[clientSocket]);
+	printf("%s", buffer);
 	sendMessage(buffer, clientSocket, *server);
 }
 

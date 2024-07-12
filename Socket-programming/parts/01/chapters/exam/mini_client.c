@@ -43,25 +43,26 @@ int	main(int argc, char *argv[]) {
 		if (FD_ISSET(STDIN_FILENO, &readSet)) {
 			readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
 			buffer[readSize] = '\0';
-			while (readSize) {
-				temp = input;
-				input = ft_strjoin(input, buffer);
-				if (!input) {
-					free(temp);
-					temp = NULL;
-					handleError("ft_strjoin() error");
-				}
-				if (temp) {
-					free(temp);
-					temp = NULL;
-				}
-				readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
-				printf("readSize: %d\n", readSize);
-				buffer[readSize] = '\0';
-			}
-			send(clientSocket, input, strlen(input), 0);
-			free(input);
-			input = NULL;
+			// while (readSize) {
+			// 	printf("readSize: %d\n", readSize);
+			// 	temp = input;
+			// 	input = ft_strjoin(input, buffer);
+			// 	if (!input) {
+			// 		free(temp);
+			// 		temp = NULL;
+			// 		handleError("ft_strjoin() error");
+			// 	}
+			// 	if (temp) {
+			// 		free(temp);
+			// 		temp = NULL;
+			// 	}
+			// 	readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
+			// 	buffer[readSize] = '\0';
+			// }
+			printf("buffer: %s\n", buffer);
+			send(clientSocket, buffer, strlen(buffer), 0);
+			// free(input);
+			// input = NULL;
 		}
 		if (FD_ISSET(clientSocket, &readSet)) {
 			readSize = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
