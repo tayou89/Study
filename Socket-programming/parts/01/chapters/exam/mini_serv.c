@@ -91,7 +91,8 @@ struct sockaddr_in	getServerAddress(int port) {
 
 	memset(&address, 0, sizeof(address));
 	address.sin_family = PF_INET;
-	address.sin_addr.s_addr = htonl(INADDR_LOOPBACK); address.sin_port = htons(port);
+	address.sin_addr.s_addr = htonl(INADDR_LOOPBACK); 
+	address.sin_port = htons(port);
 	return (address);
 }
 
@@ -180,7 +181,7 @@ void	sendClientMessage(t_server *server) {
 		buffer = (char *) malloc(strlen(messageLine) + 100);
 		if (!buffer) 
 			handleError("Fatal error");
-		sprintf(buffer, "client %d: %s", server->request.id, server->request.message);
+		sprintf(buffer, "client %d: %s", server->request.id, messageLine);
 		printf("%s", buffer);
 		sendMessage(buffer, server->request.socket, *server);
 		free(buffer);
