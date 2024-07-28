@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE	10
 
 void	checkArgumentCount(int count);
 void	handleError(char *errorMessage);
@@ -43,25 +43,23 @@ int	main(int argc, char *argv[]) {
 		if (FD_ISSET(STDIN_FILENO, &readSet)) {
 			readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
 			buffer[readSize] = '\0';
-			while (readSize && readSize != -1) {
-				printf("readSize: %d\n", readSize);
-				temp = input;
-				input = ft_strjoin(input, buffer);
-				if (!input) {
-					free(temp);
-					temp = NULL;
-					handleError("ft_strjoin() error");
-				}
-				if (temp) {
-					free(temp);
-					temp = NULL;
-				}
-				readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
-				buffer[readSize] = '\0';
-			}
-			if (readSize == -1)
-				continue ;
-			printf("buffer: %s\n", buffer);
+			// while (readSize) {
+			// 	printf("readSize: %d\n", readSize);
+			// 	temp = input;
+			// 	input = ft_strjoin(input, buffer);
+			// 	if (!input) {
+			// 		free(temp);
+			// 		temp = NULL;
+			// 		handleError("ft_strjoin() error");
+			// 	}
+			// 	if (temp) {
+			// 		free(temp);
+			// 		temp = NULL;
+			// 	}
+			// 	readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
+			// 	buffer[readSize] = '\0';
+			// }
+			printf("buffer: %s", buffer);
 			send(clientSocket, buffer, strlen(buffer), 0);
 			free(input);
 			input = NULL;

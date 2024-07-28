@@ -6,13 +6,13 @@
 #include <sys/select.h>
 #include <stdio.h>
 
-#define BUFFER_SIZE	1024
+#define BUFFER_SIZE	42 * 4096	
 #define CLIENTS_MAX  1024
 
 typedef struct s_request {
 	int		socket;
 	int		id;
-	char	*message;
+	char	message[BUFFER_SIZE];
 }	t_request;
 
 typedef struct s_server {
@@ -37,11 +37,9 @@ void    			acceptClient(t_server *server);
 void				receiveRequestMessage(t_server *server);
 void				removeClient(int clientSocket, t_server *server);
 int					getNewSocketMax(int prevMax, fd_set fdSet);
-void				getRequestMessage(char *prevMessage, t_server *server);
-char				*ft_strjoin(char *string1, char *string2);
 void				sendClientMessage(t_server *server);
 void				sendMessage(char *message, int ignoreFd, t_server server); 
-void				handleError(char *message, t_server *server);
+void				handleError(char *message);
 void				freeRequestMessage(t_server *server);
 
 int main(int argc, char *argv[]) {
@@ -56,7 +54,7 @@ int main(int argc, char *argv[]) {
 
 void    checkArgumentCount(int count) {
     if (count < 2)
-        handleError("Wrong number of arguments", NULL);
+        handleError("Wrong number of arguments");
 }
 
 void    setServer(t_server *server, int port) {
@@ -68,7 +66,7 @@ void    setServer(t_server *server, int port) {
 	server->lastClientId = -1;
 	server->request.socket = -1;
 	server->request.id = -1;
-	server->request.message = NULL;
+	bzero(server->request.message, sizeof(server->request.message));
 }
 
 int	getServerSocket(void) {
@@ -76,7 +74,7 @@ int	getServerSocket(void) {
 
 	serverSocket = socket(PF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
-		handleError("Fatal error", NULL);
+		handleError("Fatal error");
 	return (serverSocket);
 }
 
@@ -93,16 +91,16 @@ struct sockaddr_in	getServerAddress(int port) {
 
 	memset(&address, 0, sizeof(address));
 	address.sin_family = PF_INET;
-	address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	address.sin_addr.s_addr = htonl(INADDR_LOOPBACK); 
 	address.sin_port = htons(port);
 	return (address);
 }
 
 void    makeServerSocketListen(int socket, struct sockaddr_in address) {
     if (bind(socket, (struct sockaddr *) &address, sizeof(address)) == -1)
-        handleError("Fatal error", NULL);
+        handleError("Fatal error");
     if (listen(socket, 100) == -1)
-        handleError("Fatal error", NULL);
+        handleError("Fatal error");
 }
 
 void    makeChattingLoop(t_server *server) {
@@ -125,6 +123,7 @@ void    response(t_server *server, fd_set readSet) {
             if (i == server->socket)
                 acceptClient(server);
 			else  {
+				printf("It's not a server socket\n");
 				server->request.socket = i;
 				server->request.id = server->clientIds[i];
 				receiveRequestMessage(server);
@@ -150,16 +149,46 @@ void    acceptClient(t_server *server) {
 }
 
 void	receiveRequestMessage(t_server *server) {
-	char	buffer[BUFFER_SIZE];
+	char	buffer[BUFFER_SIZE - 1];
 	int		readSize;
 
-	printf("receiveRequestMessage() called");
+	printf("receiveRequestMessage() called\n");
 	readSize = recv(server->request.socket, buffer, BUFFER_SIZE - 1, 0);
+	if (readSize == -1)	
+		return ;
 	buffer[readSize] = '\0';
 	if (readSize == 0) 
 		removeClient(server->request.socket, server);
-	else 
-		getRequestMessage(buffer, server);
+	strcpy(server->request.message, buffer);
+}
+
+void	sendClientMessage(t_server *server) {
+	char	messageLine[strlen(server->request.message) + 1];
+	char	*buffer;
+	char	*start = server->request.message;
+	char	*end = start + strlen(start);
+	char	*newLine = NULL;
+
+	bzero(messageLine, sizeof(messageLine));
+	while (*start != '\0') {
+		newLine = strstr(start, "\n");
+		if (newLine)
+			end = newLine + 1;
+		else
+			end = start + strlen(start);
+		strcpy(messageLine, start);
+		messageLine[end - start] = '\0';
+		buffer = (char *) malloc(strlen(messageLine) + 100);
+		if (!buffer) 
+			handleError("Fatal error");
+		sprintf(buffer, "client %d: %s", server->request.id, messageLine);
+		printf("%s", buffer);
+		sendMessage(buffer, server->request.socket, *server);
+		free(buffer);
+		buffer = NULL;
+		start = end + 1;
+	}
+	bzero(server->request.message, sizeof(server->request.message));
 }
 
 void	removeClient(int clientSocket, t_server *server) {
@@ -185,68 +214,7 @@ int	getNewSocketMax(int prevMax, fd_set fdSet) {
 	return (max);
 }
 
-void	getRequestMessage(char *prevMessage, t_server *server) {
-	char	buffer[BUFFER_SIZE];
-	char	*joinedMessage;
-	int		recvSize;
 
-	server->request.message = (char *) malloc(sizeof(char) * strlen(prevMessage) + 1);
-	if (!server->request.message)
-		handleError("Fatal error", NULL);
-	bzero(buffer, BUFFER_SIZE);
-	recvSize = recv(server->request.socket, buffer, BUFFER_SIZE - 1, 0);
-	while (recvSize) {
-		joinedMessage = ft_strjoin(server->request.message, buffer);
-		if (!joinedMessage)
-			handleError("Fatal error", server);
-		free(server->request.message);
-		server->request.message = NULL;
-		server->request.message = joinedMessage;
-		bzero(buffer, BUFFER_SIZE);
-		recvSize = recv(server->request.socket, buffer, BUFFER_SIZE - 1, 0);
-	}
-}
-
-char	*ft_strjoin(char *string1, char *string2) {
-	char	*joinedString;
-	int		size = strlen(string1) + strlen(string2);
-
-	joinedString = (char *) malloc(sizeof(char) * size + 1);
-	if (!joinedString)	
-		return (NULL);
-	strcpy(joinedString, string1);
-	strcat(joinedString, string2);
-	joinedString[size] = '\0';
-	return (joinedString);
-}
-
-void	sendClientMessage(t_server *server) {
-	char	messageLine[strlen(server->request.message)];
-	char	*buffer;
-	char	*start = server->request.message;
-	char	*end = start + strlen(start);
-	char	*newLine = NULL;
-
-	while (*start != '\0') {
-		newLine = strstr(start, "\n");
-		if (newLine)
-			end = newLine + 1;
-		else
-			end = start + strlen(start);
-		strcpy(messageLine, start);
-		messageLine[end - start] = '\0';
-		buffer = (char *) malloc(strlen(messageLine) + 100);
-		if (!buffer) 
-			handleError("Fatal error", server);
-		sprintf(buffer, "client %d: %s", server->request.id, server->request.message);
-		printf("%s", buffer);
-		sendMessage(buffer, server->request.socket, *server);
-		free(buffer);
-		buffer = NULL;
-		start = end + 1;
-	}
-	freeRequestMessage(server);
-}
 
 void	sendMessage(char *message, int ignoreFd, t_server server) {
 	fd_set			writeSet = server.fdSet;
@@ -264,16 +232,8 @@ void	sendMessage(char *message, int ignoreFd, t_server server) {
 	}
 }
 
-void    handleError(char *message, t_server *server) {
-	if (server && server->request.message) 
-		freeRequestMessage(server);
+void    handleError(char *message) {
     write(STDERR_FILENO, message, strlen(message));
     write(STDERR_FILENO, "\n", 1);
-	close(server->socket);
     exit(1);
-}
-
-void	freeRequestMessage(t_server *server) {
-	free(server->request.message);
-	server->request.message = NULL;
 }
