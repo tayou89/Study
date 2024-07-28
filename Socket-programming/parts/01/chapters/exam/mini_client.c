@@ -32,8 +32,8 @@ int	main(int argc, char *argv[]) {
 	if (connect(clientSocket, (struct sockaddr *) &address, sizeof(address)) == -1)
 		handleError("connect() error"); 
 	printf("Succefully connected to %s:%s\n", argv[1], argv[2]);
-	// fcntl(clientSocket, F_SETFL, O_NONBLOCK);
-	// fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+	fcntl(clientSocket, F_SETFL, O_NONBLOCK);
+	fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
 	FD_ZERO(&fdSet);
 	FD_SET(STDIN_FILENO, &fdSet);
 	FD_SET(clientSocket, &fdSet);
@@ -43,26 +43,28 @@ int	main(int argc, char *argv[]) {
 		if (FD_ISSET(STDIN_FILENO, &readSet)) {
 			readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
 			buffer[readSize] = '\0';
-			// while (readSize) {
-			// 	printf("readSize: %d\n", readSize);
-			// 	temp = input;
-			// 	input = ft_strjoin(input, buffer);
-			// 	if (!input) {
-			// 		free(temp);
-			// 		temp = NULL;
-			// 		handleError("ft_strjoin() error");
-			// 	}
-			// 	if (temp) {
-			// 		free(temp);
-			// 		temp = NULL;
-			// 	}
-			// 	readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
-			// 	buffer[readSize] = '\0';
-			// }
+			while (readSize && readSize != -1) {
+				printf("readSize: %d\n", readSize);
+				temp = input;
+				input = ft_strjoin(input, buffer);
+				if (!input) {
+					free(temp);
+					temp = NULL;
+					handleError("ft_strjoin() error");
+				}
+				if (temp) {
+					free(temp);
+					temp = NULL;
+				}
+				readSize = read(STDIN_FILENO, buffer, BUFFER_SIZE - 1);
+				buffer[readSize] = '\0';
+			}
+			if (readSize == -1)
+				continue ;
 			printf("buffer: %s\n", buffer);
 			send(clientSocket, buffer, strlen(buffer), 0);
-			// free(input);
-			// input = NULL;
+			free(input);
+			input = NULL;
 		}
 		if (FD_ISSET(clientSocket, &readSet)) {
 			readSize = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
@@ -71,7 +73,7 @@ int	main(int argc, char *argv[]) {
 				break ;
 			}
 			buffer[readSize] = '\0';
-			while (readSize) {
+			while (readSize && readSize != -1) {
 				temp = input;
 				input = ft_strjoin(input, buffer);
 				if (!input) {
@@ -86,6 +88,8 @@ int	main(int argc, char *argv[]) {
 				readSize = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
 				buffer[readSize] = '\0';
 			}
+			if (readSize == -1)
+				continue ;
 			printf("%s", input);
 			free(input);
 			input = NULL;
